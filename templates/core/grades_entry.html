@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Enter KCSE Grades | CareerPath Kenya{% endblock %}
+{% block content %}
+<div class="container py-4">
+
+  <div class="row mb-4">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active">Step 1: Enter Grades</li>
+        </ol>
+      </nav>
+      <h2 class="fw-bold mb-1">Step 1: Enter Your KCSE Grades</h2>
+      <p class="text-muted">Select all subjects you sat and enter your grade. Enter at least 7 subjects.</p>
+    </div>
+  </div>
+
+  <form method="post" id="gradesForm">
+    {% csrf_token %}
+
+    {% for group_name, subjects in grouped_subjects.items %}
+    <div class="card mb-3">
+      <div class="card-header-primary">
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-folder2-open me-2"></i>{{ group_name }} Subjects
+        </h6>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width:40px" class="text-center">✓</th>
+              <th>Subject</th>
+              <th style="width:160px">Your Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for subject in subjects %}
+            <tr>
+              <td class="text-center align-middle">
+                <input type="checkbox" class="form-check-input subject-check"
+                       id="check_{{ subject.id }}"
+                       data-subject="{{ subject.id }}"
+                       {% if subject.id in existing_grades %}checked{% endif %}
+                       {% if subject.is_compulsory %}checked disabled{% endif %}>
+              </td>
+              <td class="align-middle">
+                <label for="check_{{ subject.id }}" class="mb-0 fw-500" style="cursor:pointer">
+                  {{ subject.name }}
+                  {% if subject.is_compulsory %}
+                    <span class="badge bg-primary-subtle text-primary ms-1 small">Compulsory</span>
+                  {% endif %}
+                </label>
+              </td>
+              <td class="align-middle">
+                <select name="grade_{{ subject.id }}"
+                        class="grade-select form-select form-select-sm grade-field"
+                        id="grade_{{ subject.id }}"
+                        {% if not subject.is_compulsory and subject.id not in existing_grades %}disabled{% endif %}>
+                  {% for val, label in grade_choices %}
+                    <option value="{{ val }}"
+                      {% if existing_grades|get_item:subject.id == val %}selected{% endif %}>
+                      {{ label }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="card p-3 mb-4 bg-light border-0">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+          <span class="fw-semibold">Subjects selected: </span>
+          <span id="subjectCount" class="badge bg-primary fs-6">0</span>
+          <span class="text-muted small ms-2">(minimum 7 required)</span>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary fw-bold px-4" id="submitBtn">
+            <i class="bi bi-check2-circle me-2"></i>Save Grades & Continue to Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Checkbox toggles grade select enabled/disabled
+  document.querySelectorAll('.subject-check').forEach(chk => {
+    if (!chk.disabled) {
+      chk.addEventListener('change', function() {
+        const gradeSelect = document.getElementById('grade_' + this.dataset.subject);
+        gradeSelect.disabled = !this.checked;
+        if (!this.checked) gradeSelect.value = '';
+        updateCount();
+      });
+    }
+  });
+
+  function updateCount() {
+    const checked = document.querySelectorAll('.subject-check:checked').length;
+    document.getElementById('subjectCount').textContent = checked;
+    document.getElementById('submitBtn').disabled = checked < 7;
+  }
+
+  // Initialize count
+  updateCount();
+
+  // Before submit: enable all grade selects so they POST
+  document.getElementById('gradesForm').addEventListener('submit', function() {
+    document.querySelectorAll('.grade-field').forEach(sel => {
+      if (sel.disabled && sel.closest('tr').querySelector('.subject-check:checked')) {
+        sel.disabled = false;
+      }
+    });
+  });
+</script>
+
+<!-- Template filter workaround for dict lookup -->
+<script>
+  // Django doesn't have built-in dict access in templates without custom filter
+  // Pre-existing grades are handled server-side via "selected" attribute above
+</script>
+{% endblock %}

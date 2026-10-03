@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | CareerPath Kenya{% endblock %}
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold mb-0">Welcome, {{ user.first_name }} 👋</h2>
+      <p class="text-muted mb-0 small">{{ user.school_name|default:"CareerPath Kenya" }} •
+        KCSE {{ user.year_completed|default:"—" }}</p>
+    </div>
+    {% if results_done %}
+    <a href="{% url 'download_report' %}" class="btn btn-success fw-bold">
+      <i class="bi bi-file-earmark-pdf-fill me-2"></i>Download PDF Report
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="card mb-4 p-4">
+    <h6 class="fw-bold mb-3 text-muted text-uppercase small letter-spacing-1">Your Progress</h6>
+    <div class="steps-bar">
+      <div class="step-item {% if grades_done %}done{% elif not grades_done %}active{% endif %}">
+        <div class="step-circle">
+          {% if grades_done %}<i class="bi bi-check-lg"></i>{% else %}1{% endif %}
+        </div>
+        <div class="step-label">Enter Grades</div>
+      </div>
+      <div class="step-line {% if grades_done %}done{% endif %}"></div>
+      <div class="step-item {% if quiz_done %}done{% elif grades_done and not quiz_done %}active{% endif %}">
+        <div class="step-circle">
+          {% if quiz_done %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}
+        </div>
+        <div class="step-label">Take Quiz</div>
+      </div>
+      <div class="step-line {% if quiz_done %}done{% endif %}"></div>
+      <div class="step-item {% if results_done %}done{% elif quiz_done and not results_done %}active{% endif %}">
+        <div class="step-circle">
+          {% if results_done %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}
+        </div>
+        <div class="step-label">View Results</div>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="d-flex flex-wrap gap-2 mt-2">
+      <a href="{% url 'grades_entry' %}" class="btn {% if grades_done %}btn-outline-success{% else %}btn-primary{% endif %} fw-semibold">
+        <i class="bi bi-journal-text me-1"></i>
+        {% if grades_done %}Edit Grades ({{ grades_count }} entered){% else %}Step 1: Enter Grades{% endif %}
+      </a>
+      <a href="{% url 'quiz' %}"
+         class="btn {% if quiz_done %}btn-outline-success{% elif grades_done %}btn-primary{% else %}btn-outline-secondary disabled{% endif %} fw-semibold">
+        <i class="bi bi-clipboard-check me-1"></i>
+        {% if quiz_done %}Retake Quiz{% else %}Step 2: Interest Quiz{% endif %}
+      </a>
+      {% if quiz_done %}
+      <a href="{% url 'generate_results' %}" class="btn btn-warning fw-semibold">
+        <i class="bi bi-cpu me-1"></i>
+        {% if results_done %}Regenerate Results{% else %}Step 3: Generate Results{% endif %}
+      </a>
+      {% endif %}
+      {% if results_done %}
+      <a href="{% url 'results' %}" class="btn btn-info text-white fw-semibold">
+        <i class="bi bi-graph-up me-1"></i>View My Results
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card p-3 h-100">
+        <div class="d-flex align-items-center gap-3">
+          <div class="flex-shrink-0 bg-primary-subtle rounded-3 d-flex align-items-center justify-content-center"
+               style="width:50px;height:50px">
+            <i class="bi bi-journal-text text-primary fs-4"></i>
+          </div>
+          <div>
+            <div class="small text-muted fw-semibold">Grades Entered</div>
+            <div class="fs-3 fw-bold">{{ grades_count }}</div>
+            <div class="small text-muted">subjects recorded</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 h-100">
+        <div class="d-flex align-items-center gap-3">
+          <div class="flex-shrink-0 bg-warning-subtle rounded-3 d-flex align-items-center justify-content-center"
+               style="width:50px;height:50px">
+            <i class="bi bi-clipboard-check text-warning fs-4"></i>
+          </div>
+          <div>
+            <div class="small text-muted fw-semibold">Interest Quiz</div>
+            <div class="fs-3 fw-bold">{% if quiz_done %}Done{% else %}—{% endif %}</div>
+            <div class="small text-muted">
+              {% if riasec_result %}Dominant: {{ riasec_result.dominant_types }}{% else %}Not completed{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 h-100">
+        <div class="d-flex align-items-center gap-3">
+          <div class="flex-shrink-0 bg-success-subtle rounded-3 d-flex align-items-center justify-content-center"
+               style="width:50px;height:50px">
+            <i class="bi bi-stars text-success fs-4"></i>
+          </div>
+          <div>
+            <div class="small text-muted fw-semibold">Top Career Match</div>
+            {% if career_result %}
+              <div class="fw-bold small">{{ career_result.top_cluster_1.name }}</div>
+              <div class="small text-muted">Score: {{ career_result.top_combined_score|floatformat:1 }}/100</div>
+            {% else %}
+              <div class="fs-3 fw-bold">—</div>
+              <div class="small text-muted">Complete steps 1 & 2</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if not grades_done %}
+  <div class="alert alert-info mt-4">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <strong>Get started:</strong> Enter your KCSE subject grades to begin your career pathway analysis.
+    <a href="{% url 'grades_entry' %}" class="alert-link ms-2">Enter Grades →</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

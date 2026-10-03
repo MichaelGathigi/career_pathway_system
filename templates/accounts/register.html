@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Create Account | CareerPath Kenya{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-6">
+
+      <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-3"
+             style="width:60px;height:60px">
+          <i class="bi bi-person-plus-fill text-white fs-3"></i>
+        </div>
+        <h2 class="fw-bold">Create Your Account</h2>
+        <p class="text-muted">Start your career pathway analysis — completely free</p>
+      </div>
+
+      <div class="card shadow-sm p-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">First Name <span class="text-danger">*</span></label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}
+                <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">Last Name <span class="text-danger">*</span></label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}
+                <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Email Address <span class="text-danger">*</span></label>
+              {{ form.email }}
+              {% if form.email.errors %}
+                <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">School Name</label>
+              {{ form.school_name }}
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">Year Completed KCSE</label>
+              {{ form.year_completed }}
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">County</label>
+              {{ form.county }}
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">Gender</label>
+              {{ form.gender }}
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">Password <span class="text-danger">*</span></label>
+              {{ form.password1 }}
+              {% if form.password1.errors %}
+                <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+              {% endif %}
+              <div class="form-text">Minimum 8 characters</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small">Confirm Password <span class="text-danger">*</span></label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}
+                <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3 py-2">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+              <i class="bi bi-person-check-fill me-2"></i>Create Account & Start Analysis
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="text-center mt-4">
+        <p class="text-muted">Already have an account?
+          <a href="{% url 'login' %}" class="fw-semibold text-primary">Sign In</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

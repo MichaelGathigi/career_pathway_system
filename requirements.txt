@@ -1,0 +1,11 @@
+# requirements.txt
+# Web-Based Career Pathway Analysis System
+# Install with: pip install -r requirements.txt
+# Requires Python 3.12+
+
+Django==6.0.3
+reportlab==4.4.10
+Pillow==12.1.1
+
+# Optional: only needed if you switch DATABASES to MySQL in settings.py
+# mysqlclient==2.2.7

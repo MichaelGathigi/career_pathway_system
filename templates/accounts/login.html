@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Sign In | CareerPath Kenya{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle mb-3"
+             style="width:60px;height:60px">
+          <i class="bi bi-box-arrow-in-right text-white fs-3"></i>
+        </div>
+        <h2 class="fw-bold">Welcome Back</h2>
+        <p class="text-muted small">Sign in to continue your career analysis</p>
+      </div>
+      <div class="card shadow-sm p-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Email Address</label>
+            {{ form.username }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Password</label>
+            {{ form.password }}
+          </div>
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger py-2 small">{{ form.non_field_errors }}</div>
+          {% endif %}
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-primary fw-bold">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="text-center mt-3">
+        <p class="text-muted small">Don't have an account?
+          <a href="{% url 'register' %}" class="fw-semibold text-primary">Create one free</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

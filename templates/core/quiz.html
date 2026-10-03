@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Interest Quiz | CareerPath Kenya{% endblock %}
+{% block extra_css %}
+<style>
+  .quiz-section-header {
+    background: linear-gradient(90deg, var(--primary), #3b82f6);
+    color: #fff; border-radius: 12px 12px 0 0; padding: 1rem 1.4rem;
+  }
+  .riasec-type-badge {
+    display: inline-block; padding: .2rem .7rem;
+    border-radius: 20px; font-size: .72rem; font-weight: 700;
+    letter-spacing: .5px; text-transform: uppercase;
+    background: rgba(255,255,255,.2); color: #fff;
+  }
+  .progress-quiz {
+    position: sticky; top: 66px; z-index: 100;
+    background: var(--bg); padding: .75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .answer-required { border: 2px solid #dc2626 !important; border-radius: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+      <li class="breadcrumb-item active">Step 2: Interest Quiz</li>
+    </ol>
+  </nav>
+
+  <!-- Sticky progress -->
+  <div class="progress-quiz mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-1">
+      <span class="fw-semibold small">Quiz Progress</span>
+      <span class="small text-muted" id="progressText">0 / {{ total_questions }} answered</span>
+    </div>
+    <div class="progress" style="height:8px;border-radius:8px">
+      <div class="progress-bar bg-primary" id="progressBar" style="width:0%;border-radius:8px"
+           role="progressbar"></div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="fw-bold mb-1">Step 2: Interest & Personality Quiz</h2>
+      <p class="text-muted">Rate each statement from 1 (Strongly Disagree) to 5 (Strongly Agree). Be honest — there are no wrong answers.</p>
+    </div>
+  </div>
+
+  <form method="post" id="quizForm">
+    {% csrf_token %}
+
+    {% for type_code, type_data in grouped_questions.items %}
+    <div class="card mb-4 overflow-hidden" id="section_{{ type_code }}">
+      <div class="quiz-section-header d-flex align-items-center gap-3">
+        <span class="riasec-type-badge">{{ type_code }}</span>
+        <div>
+          <div class="fw-bold fs-6">{{ type_data.type_name }}</div>
+          <div class="small opacity-75">{{ type_data.description }}</div>
+        </div>
+      </div>
+      <div class="card-body">
+        {% for question in type_data.questions %}
+        <div class="quiz-question" id="qblock_{{ question.id }}">
+          <div class="q-text small fw-semibold text-dark">
+            <span class="text-muted me-2">#{{ forloop.parentloop.counter }}.{{ forloop.counter }}</span>
+            {{ question.question_text }}
+          </div>
+          <div class="rating-group" role="group">
+            {% for val in score_labels.keys %}
+            <label class="rating-btn" id="btn_{{ question.id }}_{{ val }}">
+              <input type="radio" name="q_{{ question.id }}" value="{{ val }}"
+                     {% if existing_responses|get_item:question.id == val %}checked{% endif %}
+                     onchange="onRate({{ question.id }}, '{{ val }}')">
+              <span class="r-num">{{ val }}</span>
+              <span class="r-lbl" style="font-size:.6rem">
+                {% if val == "1" %}Strongly<br>Disagree
+                {% elif val == "2" %}Disagree
+                {% elif val == "3" %}Neutral
+                {% elif val == "4" %}Agree
+                {% elif val == "5" %}Strongly<br>Agree
+                {% endif %}
+              </span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="card p-3 bg-light border-0 mb-4">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="small text-muted">
+          <i class="bi bi-info-circle me-1"></i>
+          All {{ total_questions }} questions must be answered before submitting.
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'grades_entry' %}" class="btn btn-outline-secondary">← Back to Grades</a>
+          <button type="submit" class="btn btn-primary fw-bold px-4" id="submitBtn" disabled>
+            <i class="bi bi-send-fill me-2"></i>Submit Quiz & Generate Results
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const TOTAL = {{ total_questions }};
+  const answered = new Set();
+
+  function onRate(questionId, value) {
+    // Update visual state for all buttons in this question
+    for (let v = 1; v <= 5; v++) {
+      const btn = document.getElementById(`btn_${questionId}_${v}`);
+      if (btn) btn.classList.toggle('selected', String(v) === String(value));
+    }
+    // Remove required highlight
+    const qblock = document.getElementById(`qblock_${questionId}`);
+    if (qblock) qblock.classList.remove('answer-required');
+
+    answered.add(questionId);
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = answered.size;
+    const pct   = Math.round((count / TOTAL) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${count} / ${TOTAL} answered`;
+    document.getElementById('submitBtn').disabled = (count < TOTAL);
+  }
+
+  // Restore state for pre-filled answers (quiz retake or browser back)
+  document.querySelectorAll('input[type=radio]:checked').forEach(r => {
+    onRate(parseInt(r.name.replace('q_', ''), 10), r.value);
+  });
+  updateProgress();
+
+  // Highlight unanswered before submit
+  document.getElementById('quizForm').addEventListener('submit', function(e) {
+    const radios = document.querySelectorAll('input[type=radio]');
+    const names  = new Set([...radios].map(r => r.name));
+    let hasUnanswered = false;
+
+    names.forEach(name => {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      if (!selected) {
+        const qId = name.replace('q_', '');
+        const qblock = document.getElementById(`qblock_${qId}`);
+        if (qblock) {
+          qblock.classList.add('answer-required');
+          if (!hasUnanswered) {
+            qblock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            hasUnanswered = true;
+          }
+        }
+      }
+    });
+
+    if (hasUnanswered) {
+      e.preventDefault();
+      alert(`Please answer all ${TOTAL} questions before submitting.`);
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% block title %}CareerPath Kenya — Discover Your Future{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 45%, #0ea5e9 100%);
+    color: #fff; padding: 5rem 0 4rem; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15; }
+  .hero .badge-pill {
+    background: rgba(255,255,255,.18); border-radius: 30px;
+    padding: .4rem 1.1rem; font-size: .85rem; font-weight: 600;
+    display: inline-block; margin-bottom: 1.2rem; backdrop-filter: blur(4px);
+  }
+  .hero-img-card {
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 20px; padding: 2rem;
+    text-align: center;
+  }
+
+  .feature-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 1rem;
+  }
+  .how-step { counter-increment: step; }
+  .how-step::before {
+    content: counter(step);
+    width: 40px; height: 40px;
+    background: var(--primary); color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem;
+    margin-bottom: .75rem;
+    font-family: 'Sora', sans-serif;
+  }
+  .how-steps { counter-reset: step; }
+
+  .stat-card {
+    text-align: center; padding: 1.8rem 1rem;
+    border-radius: 16px;
+  }
+  .stat-card .stat-num {
+    font-family: 'Sora', sans-serif;
+    font-size: 2.4rem; font-weight: 800; color: var(--primary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="badge-pill">
+          🇰🇪 Designed for Kenyan Form 4 & Grade 12 Graduates
+        </div>
+        <h1>Discover Your <span style="color:#fbbf24">Ideal Career Path</span> with Confidence</h1>
+        <p class="mt-3 mb-4" style="font-size:1.1rem; opacity:.9">
+          Enter your KCSE grades, complete an interest quiz, and receive
+          personalized career pathway recommendations — matched to Kenyan
+          universities, TVET colleges, and labor-market realities.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'register' %}" class="btn btn-warning btn-lg fw-bold px-4">
+            <i class="bi bi-rocket-takeoff-fill me-2"></i>Start Free Analysis
+          </a>
+          <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-4">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Already Registered?
+          </a>
+        </div>
+        <p class="mt-3" style="font-size:.85rem; opacity:.7">
+          <i class="bi bi-shield-check me-1"></i>Free • Private • No external accounts needed
+        </p>
+      </div>
+      <div class="col-lg-5 offset-lg-1">
+        <div class="hero-img-card">
+          <i class="bi bi-compass-fill" style="font-size:3rem; color:#fbbf24"></i>
+          <h4 class="text-white mt-3 mb-2">3-Step Analysis</h4>
+          <div class="d-flex flex-column gap-2 mt-3">
+            
+            <div class="d-flex align-items-center gap-3 text-white text-start p-2 rounded" style="background:rgba(255,255,255,.1)">
+              <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:32px;height:32px;min-width:32px">1</div>
+              <span>Enter Your KCSE Subject Grades</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 text-white text-start p-2 rounded" style="background:rgba(255,255,255,.1)">
+              <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:32px;height:32px;min-width:32px">2</div>
+              <span>Complete 30-Question Interest Quiz</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 text-white text-start p-2 rounded" style="background:rgba(255,255,255,.1)">
+              <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:32px;height:32px;min-width:32px">3</div>
+              <span>Receive Personalized Career Report</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="row text-center g-3">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-num">10</div>
+          <div class="text-muted fw-500 small">Career Clusters</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-num">30+</div>
+          <div class="text-muted fw-500 small">Courses Available</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-num">25+</div>
+          <div class="text-muted fw-500 small">Kenyan Institutions</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-num">100%</div>
+          <div class="text-muted fw-500 small">Free to Use</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="badge bg-primary-subtle text-primary fw-semibold mb-2 px-3 py-2 rounded-pill">System Features</span>
+      <h2>Everything You Need to Make an Informed Decision</h2>
+      <p class="text-muted">Built specifically for the Kenyan education and employment context</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="feature-icon bg-primary-subtle">
+            <i class="bi bi-journal-text text-primary"></i>
+          </div>
+          <h5>Academic Profiling</h5>
+          <p class="text-muted mb-0">Enter your KCSE grades across all subjects. Our engine weights each subject's relevance to different career clusters using official KUCCPS cluster frameworks.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="feature-icon bg-warning-subtle">
+            <i class="bi bi-clipboard-pulse text-warning"></i>
+          </div>
+          <h5>RIASEC Interest Quiz</h5>
+          <p class="text-muted mb-0">30 carefully crafted questions assess your personality across 6 dimensions: Realistic, Investigative, Artistic, Social, Enterprising, and Conventional.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="feature-icon bg-success-subtle">
+            <i class="bi bi-graph-up-arrow text-success"></i>
+          </div>
+          <h5>Personalized Recommendations</h5>
+          <p class="text-muted mb-0">A weighted scoring model (60% academic, 40% interest) ranks all 10 career clusters and recommends specific courses and institutions for your profile.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="feature-icon bg-info-subtle">
+            <i class="bi bi-building text-info"></i>
+          </div>
+          <h5>Institution Matching</h5>
+          <p class="text-muted mb-0">See which public universities, private universities, and TVET colleges in Kenya offer courses that match your recommended career pathways.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="feature-icon bg-danger-subtle">
+            <i class="bi bi-bar-chart-line text-danger"></i>
+          </div>
+          <h5>Labor Market Insights</h5>
+          <p class="text-muted mb-0">Know the salary ranges, key employers, growth outlook, and saturation levels for each career cluster — data drawn from KNBS and KEPSA reports.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="feature-icon bg-secondary-subtle">
+            <i class="bi bi-file-earmark-pdf text-secondary"></i>
+          </div>
+          <h5>Downloadable PDF Report</h5>
+          <p class="text-muted mb-0">Download a comprehensive, professionally formatted career pathway report you can share with your parents, school counselor, or use for reference.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="badge bg-success-subtle text-success fw-semibold mb-2 px-3 py-2 rounded-pill">Simple Process</span>
+      <h2>How It Works</h2>
+    </div>
+    <div class="row g-4 how-steps">
+      <div class="col-md-3 text-center how-step">
+        <i class="bi bi-person-plus-fill fs-2 text-primary mb-2 d-block"></i>
+        <h6>Create Account</h6>
+        <p class="text-muted small">Register with your email and basic school information. Takes under 2 minutes.</p>
+      </div>
+      <div class="col-md-3 text-center how-step">
+        <i class="bi bi-journal-check fs-2 text-warning mb-2 d-block"></i>
+        <h6>Enter Grades</h6>
+        <p class="text-muted small">Select the subjects you sat and enter your KCSE grade for each (A to E).</p>
+      </div>
+      <div class="col-md-3 text-center how-step">
+        <i class="bi bi-ui-checks fs-2 text-success mb-2 d-block"></i>
+        <h6>Take Interest Quiz</h6>
+        <p class="text-muted small">Answer 30 statements about your interests and personality on a 1–5 scale.</p>
+      </div>
+      <div class="col-md-3 text-center how-step">
+        <i class="bi bi-stars fs-2 text-danger mb-2 d-block"></i>
+        <h6>Get Your Report</h6>
+        <p class="text-muted small">Receive ranked career recommendations with courses, institutions, and labor data.</p>
+      </div>
+    </div>
+    <div class="text-center mt-5">
+      <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-5">
+        <i class="bi bi-arrow-right-circle-fill me-2"></i>Begin Your Analysis Now
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

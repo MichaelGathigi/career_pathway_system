@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}My Profile | CareerPath Kenya{% endblock %}
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold mb-0">{{ user.get_full_name }}</h2>
+      <p class="text-muted mb-0 small">{{ user.email }}</p>
+    </div>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary fw-semibold">
+      <i class="bi bi-grid me-2"></i>Back to Dashboard
+    </a>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-7">
+      <div class="card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-person-vcard me-2"></i>Personal &amp; Academic Details</h6>
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr><th class="text-muted fw-semibold" style="width:40%">School</th><td>{{ user.school_name|default:"Not specified" }}</td></tr>
+            <tr><th class="text-muted fw-semibold">Year Completed</th><td>{{ user.year_completed|default:"Not specified" }}</td></tr>
+            <tr><th class="text-muted fw-semibold">Curriculum</th><td>{{ user.get_curriculum_display }}</td></tr>
+            <tr><th class="text-muted fw-semibold">County</th><td>{{ user.county|default:"Not specified" }}</td></tr>
+            <tr><th class="text-muted fw-semibold">Gender</th><td>{{ user.get_gender_display|default:"Not specified" }}</td></tr>
+            <tr><th class="text-muted fw-semibold">Member Since</th><td>{{ user.created_at|date:"d M Y" }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-md-5">
+      <div class="card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-list-check me-2"></i>Progress</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2">
+            <i class="bi {% if grades_submitted %}bi-check-circle-fill text-success{% else %}bi-circle text-muted{% endif %} me-2"></i>
+            KCSE grades entered
+            {% if not grades_submitted %}<a href="{% url 'grades_entry' %}" class="small ms-1">Enter now →</a>{% endif %}
+          </li>
+          <li class="mb-2">
+            <i class="bi {% if quiz_submitted %}bi-check-circle-fill text-success{% else %}bi-circle text-muted{% endif %} me-2"></i>
+            Interest quiz completed
+            {% if grades_submitted and not quiz_submitted %}<a href="{% url 'quiz' %}" class="small ms-1">Take quiz →</a>{% endif %}
+          </li>
+          <li>
+            <i class="bi {% if has_results %}bi-check-circle-fill text-success{% else %}bi-circle text-muted{% endif %} me-2"></i>
+            Career results generated
+            {% if has_results %}<a href="{% url 'results' %}" class="small ms-1">View results →</a>{% endif %}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
